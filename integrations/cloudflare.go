@@ -1,56 +1,39 @@
 package integrations
 
 import (
-	"time"
-
+	"fmt"
 	cf "github.com/cloudflare/cloudflare-go"
 )
 
+const healthCheckFailed = "health check for cloudflare failed"
+
 var api *cf.API
 
-type Record struct {
-	Id        string
-	Zone      string
-	Ttl       uint
-	DnsType   string
-	DnsData   string
-	Timestamp time.Time
-}
-
-type Zone struct {
-	Id      string
-	Name    string
-	Records []Record
-}
-
-func (z *Zone) AppendRecords(r ...Record) {
-	if z.Records == nil {
-		z.Records = []Record{}
+//InitApi
+//initialize api token
+func InitCloudFlareAPI(apiToken string) (err error) {
+	api, err = cf.NewWithAPIToken(apiToken)
+	if err != nil {
+		return
 	}
-	for _, rr := range r {
-		z.Records = append(z.Records, rr)
+	if !healthCheck(){
+		err = fmt.Errorf(healthCheckFailed)
+		return
 	}
 	return
 }
 
-type Zones []Zone
-
-// InitAPI -- Configure token to cloudflare
-func InitAPI(apiToken string) (err error) {
-	api, err = cf.NewWithAPIToken(apiToken)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func HealthCheck() bool {
-	_, err := api.ListZones()
+func healthCheck() bool {
+	_, err := api.UserDetails()
 	if err != nil {
 		return false
 	}
 	return true
 }
+
+// TODO: later expand health check to:
+// - check connection
+// - see if user has permissions.
 
 // ListZones -- get all zones
 func ListZones() (zones Zones, err error) {
@@ -58,14 +41,10 @@ func ListZones() (zones Zones, err error) {
 	if err != nil {
 		return
 	}
-
 	for _, z := range cfz {
-		zz := Zone{
-			Id:      z.ID,
-			Name:    z.Name,
-			Records: []Record{},
-		}
-		zones = append(zones, zz)
+		zz := Zone{}
+		zz.translateFromCloudflare(z)
+		zones.appendZone(zz)
 	}
 	return
 }
@@ -75,10 +54,7 @@ func CreateZone(zone Zone) (createdZone Zone, err error) {
 	if err != nil {
 		return
 	}
-	createdZone = Zone{
-		Id:      z.ID,
-		Name:    z.Name,
-		Records: []Record{},
-	}
+	createdZone = Zone{}
+	createdZone.translateFromCloudflare(z)
 	return
 }
