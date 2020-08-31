@@ -2,7 +2,7 @@ package integrations
 
 import "github.com/cloudflare/cloudflare-go"
 
-var api cloudflare.API
+var api *cloudflare.API
 
 func InitAPI(apiKey, apiEmail string)(err error){
 	api,err=cloudflare.New(apiKey,apiEmail)
