@@ -1,0 +1,13 @@
+name: Continuos Integration
+on: [push,pull_request]
+
+jobs:
+  test:
+    name: Install dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: unit test
+        #TODO: CI must use actions instead of Makefile
+        run: make install
