@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	err := integrations.InitCloudFlareAPI("WbEIMNSSDoTAxANuuN9OgTphO7Fq7h7dc6YUzw8g")
+	err := integrations.InitCloudFlareAPI("deleted-token")
 
 	if err != nil {
 		log.Fatalf("Fatal on auth %v", err)
