@@ -43,6 +43,32 @@ func HealthCheck() bool {
 }
 
 // ListZones -- get all zones
-func ListZones() ([]cf.Zone, error) {
-	return api.ListZones()
+func ListZones() (zones Zones,err error) {
+	cfz,err:=api.ListZones()
+	if err!=nil{
+		return
+	}
+
+	for _,z := range cfz{
+		zz:=Zone{
+			Id:      z.ID,
+			Name:    z.Name,
+			Records: []Record{},
+		}
+		zones=append(zones,zz)
+	}
+	return
+}
+
+func CreateZone(zone Zone)(createdZone Zone,err error){
+	z,err:=api.CreateZone(zone.Name,true,cf.Account{ID:api.AccountID},"full")
+	if err!=nil{
+		return
+	}
+	createdZone=Zone{
+		Id:      z.ID,
+		Name:    z.Name,
+		Records: []Record{},
+	}
+	return
 }

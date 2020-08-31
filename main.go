@@ -20,4 +20,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	zones,err=integrations.ListZones()
+	if err!=nil{
+		log.Fatal(err)
+	}
+
+	for _,z :=range zones{
+		fmt.Printf("zone: %v id: %v\n", z.Name,z.Id)
+	}
+
 }
