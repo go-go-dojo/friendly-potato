@@ -29,4 +29,13 @@ func main() {
 		fmt.Printf("zone: %v id: %v\n", z.Name,z.Id)
 	}
 
+
+	//zone, err := integrations.CreateZone()
+
+	if err!=nil{
+		log.Fatal(err)
+	}
+
+
 }
+

@@ -23,6 +23,16 @@ type Zone struct {
 	Records []Record
 }
 
+func (z *Zone) AppendRecords(r ...Record) {
+	if z.Records == nil {
+		z.Records = []Record{}
+	}
+	for _, rr := range r {
+		z.Records = append(z.Records, rr)
+	}
+	return
+}
+
 type Zones []Zone
 
 // InitAPI -- Configure token to cloudflare
@@ -43,29 +53,29 @@ func HealthCheck() bool {
 }
 
 // ListZones -- get all zones
-func ListZones() (zones Zones,err error) {
-	cfz,err:=api.ListZones()
-	if err!=nil{
+func ListZones() (zones Zones, err error) {
+	cfz, err := api.ListZones()
+	if err != nil {
 		return
 	}
 
-	for _,z := range cfz{
-		zz:=Zone{
+	for _, z := range cfz {
+		zz := Zone{
 			Id:      z.ID,
 			Name:    z.Name,
 			Records: []Record{},
 		}
-		zones=append(zones,zz)
+		zones = append(zones, zz)
 	}
 	return
 }
 
-func CreateZone(zone Zone)(createdZone Zone,err error){
-	z,err:=api.CreateZone(zone.Name,true,cf.Account{ID:api.AccountID},"full")
-	if err!=nil{
+func CreateZone(zone Zone) (createdZone Zone, err error) {
+	z, err := api.CreateZone(zone.Name, true, cf.Account{ID: api.AccountID}, "full")
+	if err != nil {
 		return
 	}
-	createdZone=Zone{
+	createdZone = Zone{
 		Id:      z.ID,
 		Name:    z.Name,
 		Records: []Record{},
