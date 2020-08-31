@@ -1,5 +1,7 @@
 # Coding Dojo - Go 1st Edition
 
+![Continuos Integration](https://github.com/go-go-dojo/friendly-potato/workflows/Continuos%20Integration/badge.svg)
+
 ## Challenge
 
 Create an API Probe to try to connect to Cloudflare APIs

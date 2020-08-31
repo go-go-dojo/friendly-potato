@@ -7,35 +7,36 @@ import (
 )
 
 func main() {
-	fmt.Println("teste")
-	err := integrations.InitAPI("OpmWl7p_ECwb1U2YMVlSXhqFW2017_we9lMCQ_4V")
+
+	err := integrations.InitCloudFlareAPI("deleted-token")
 
 	if err != nil {
 		log.Fatalf("Fatal on auth %v", err)
 	}
 
 	zones, err := integrations.ListZones()
-	fmt.Printf("%v", zones)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	zones,err=integrations.ListZones()
-	if err!=nil{
+	for _, z := range zones {
+		fmt.Printf("zone: %v", z.Resource.Name)
+	}
+
+	testZone:=integrations.Zone{Resource: integrations.DomainResource{Name: "1-qr.me",},}
+
+	zone, err := integrations.CreateZone(testZone)
+	if err != nil {
 		log.Fatal(err)
+	}else{
+		fmt.Printf("%v\n",zone.Resource.Name)
 	}
 
-	for _,z :=range zones{
-		fmt.Printf("zone: %v id: %v\n", z.Name,z.Id)
-	}
-
-
-	//zone, err := integrations.CreateZone()
-
-	if err!=nil{
+	zone, err = integrations.DeleteZone(testZone)
+	if err != nil {
 		log.Fatal(err)
+	}else{
+		fmt.Printf("%v\n",zone.Resource.Name)
 	}
-
 
 }
-
