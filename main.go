@@ -8,7 +8,7 @@ import (
 
 func main() {
 	fmt.Println("teste")
-	err := integrations.InitCloudFlareAPI("OpmWl7p_ECwb1U2YMVlSXhqFW2017_we9lMCQ_4V")
+	err := integrations.InitCloudFlareAPI("WbEIMNSSDoTAxANuuN9OgTphO7Fq7h7dc6YUzw8g")
 
 	if err != nil {
 		log.Fatalf("Fatal on auth %v", err)
@@ -26,13 +26,23 @@ func main() {
 	}
 
 	for _, z := range zones {
-		fmt.Printf("zone: %v id: %v\n", z.Name, z.Id)
+		fmt.Printf("zone: %v id: %v\n", z.Resource, z.Resource.Name)
 	}
 
-	//zone, err := integrations.CreateZone()
+	testZone:=integrations.Zone{Resource: integrations.DomainResource{Name: "xptoteste9000.com",},}
 
+	zone, err := integrations.CreateZone(testZone)
 	if err != nil {
 		log.Fatal(err)
+	}else{
+		fmt.Printf("%v",zone)
+	}
+
+	zone, err = integrations.DeleteZone(testZone)
+	if err != nil {
+		log.Fatal(err)
+	}else{
+		fmt.Printf("%v",zone)
 	}
 
 }

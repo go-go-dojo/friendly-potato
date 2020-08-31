@@ -99,9 +99,8 @@ func (d DomainResource)translateToCloudflare()(zone cf.Zone){
 }
 
 type Zone struct {
-	Id      string
-	Name    string
-	Records []Record
+	Resource DomainResource
+	Records  []Record
 }
 
 func (z *Zone) appendRecords(record ...Record) {
@@ -119,10 +118,11 @@ func (z *Zone) translateFromCloudflare(zone cf.Zone) {
 	 if z == nil{
 	 	*z = Zone{}
 	 }
+	 dr := DomainResource{}
+	 dr.translateFromCloudflare(zone)
 	 *z = Zone{
-		Id:      zone.ID,
-		Name:    zone.Name,
-		Records: []Record{},
+		Resource: dr,
+		Records:  []Record{},
 	}
 }
 
@@ -131,7 +131,7 @@ type Zones []Zone
 func (z Zones) Names()(names []string){
 	names = []string{}
 	for _,zz := range z{
-		names = append(names,zz.Name)
+		names = append(names,zz.Resource.Name)
 	}
 	return
 }
@@ -148,7 +148,7 @@ func (z *Zones) appendZone(zone ...Zone) {
 	*z = za
 }
 
-func (z *Zones)cloudflareTranslate(zones []cf.Zone){
+func (z *Zones)translateFromCloudflare(zones []cf.Zone){
 	for _, zc := range zones {
 		zz := Zone{}
 		zz.translateFromCloudflare(zc)
