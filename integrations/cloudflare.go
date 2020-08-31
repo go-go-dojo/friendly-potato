@@ -62,10 +62,12 @@ func CreateZone(zone Zone) (createdZone Zone, err error) {
 
 // DeleteZone -- deletes a zone
 func DeleteZone(zone Zone)(deletedZone Zone,err error){
-	cfz:=zone.Resource.translateToCloudflare()
+	cfz:=zone.translateToCloudflare()
 	if cfz.ID == ""{
 		cfz.ID,err=api.ZoneIDByName(zone.Resource.Name)
-		return
+		if err != nil{
+			return
+		}
 	}
 	dz, err := api.DeleteZone(cfz.ID)
 	if err!=nil{

@@ -126,6 +126,11 @@ func (z *Zone) translateFromCloudflare(zone cf.Zone) {
 	}
 }
 
+func (z Zone)translateToCloudflare()(zone cf.Zone){
+	zone=z.Resource.translateToCloudflare()
+	return
+}
+
 type Zones []Zone
 
 func (z Zones) Names()(names []string){

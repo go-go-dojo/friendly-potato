@@ -9,6 +9,12 @@ import (
 	"testing"
 )
 
+const(
+	realDomain1="1-qr.me"
+	realDomain2="gitpages.dev"
+	fakeDomain="abcxpto2020ultra.com"
+	)
+
 func TestInitAPI(t *testing.T) {
 	t.Logf("lookup CF_TOKEN env")
 	cfToken, ok := os.LookupEnv("CF_TOKEN")
@@ -59,34 +65,46 @@ func TestCreateZone(t *testing.T) {
 		wantErr         bool
 	}{
 		{
-			name: "create zone blablabrwe34243la.com",
+			name: "create zone "+realDomain1,
 			args: args{
 				zone: Zone{
-					Resource: DomainResource{Name: "blablabrwe34243la.com",},
+					Resource: DomainResource{Name: realDomain1,},
 				},
 			},
 			wantCreatedZone: Zone{
-				Resource: DomainResource{Name: "blablabrwe34243la.com",},
+				Resource: DomainResource{Name: realDomain1,},
 			},
 			wantErr: false,
 		},
 		{
-			name: "create zone xptozonsda3412341232e.com",
+			name: "create zone "+realDomain2,
 			args: args{
 				zone: Zone{
-					Resource: DomainResource{Name: "xptozonsda3412341232e.com",},
+					Resource: DomainResource{Name: realDomain2,},
 				},
 			},
 			wantCreatedZone: Zone{
-				Resource: DomainResource{Name: "xptozonsda3412341232e.com",},
+				Resource: DomainResource{Name: realDomain2,},
 			},
 			wantErr: false,
 		},
 		{
-			name: "create duplicate zone xptozonsda3412341232e.com",
+			name: "create duplicate zone " + realDomain2,
 			args: args{
 				zone: Zone{
-					Resource: DomainResource{Name: "xptozonsda3412341232e.com",},
+					Resource: DomainResource{Name: realDomain2,},
+				},
+			},
+			wantCreatedZone: Zone{
+				Resource: DomainResource{Name: ""},
+			},
+			wantErr: true,
+		},
+		{
+			name: "create fake domain zone " + fakeDomain,
+			args: args{
+				zone: Zone{
+					Resource: DomainResource{Name: fakeDomain,},
 				},
 			},
 			wantCreatedZone: Zone{
@@ -126,13 +144,13 @@ func TestListZones(t *testing.T) {
 		wantErr   bool
 	}{
 		{
-			name: "list zone find zone xptozone.com, blablabrwe34243la.com",
+			name: "list zone find zone "+ realDomain1 +","+ realDomain2,
 			wantZones: Zones{
 				Zone{
-					Resource: DomainResource{Name: "blablabrwe34243la.com"},
+					Resource: DomainResource{Name: realDomain1},
 				},
 				{
-					Resource: DomainResource{Name: "xptozonsda3412341232e.com"},
+					Resource: DomainResource{Name: realDomain2},
 				},
 			},
 			wantErr: false,
@@ -173,36 +191,36 @@ func TestDeleteZone(t *testing.T) {
 		wantErr         bool
 	}{
 		{
-			name: "delete zone xptozonsda3412341232e.com",
+			name: "delete zone " + realDomain2,
 			args: args{
 				zone: Zone{
 					Resource: DomainResource{
-						Name: "xptozonsda3412341232e.com",
+						Name: realDomain2,
 					},
 				},
 			},
 			wantDeletedZone: Zone{
-				Resource: DomainResource{Name: "xptozonsda3412341232e.com",},
+				Resource: DomainResource{Name: realDomain2,},
 			},
 			wantErr: false,
 		},
 		{
-			name: "delete zone blablabrwe34243la.com",
+			name: "delete zone "+realDomain1,
 			args: args{
 				zone: Zone{
-					Resource: DomainResource{Name: "blablabrwe34243la.com",},
+					Resource: DomainResource{Name: realDomain1,},
 				},
 			},
 			wantDeletedZone: Zone{
-				Resource: DomainResource{Name: "blablabrwe34243la.com",},
+				Resource: DomainResource{Name: realDomain1,},
 			},
 			wantErr: false,
 		},
 		{
-			name: "delete nonexistent zone eae.com",
+			name: "delete nonexistent zone" + fakeDomain,
 			args: args{
 				zone: Zone{
-					Resource: DomainResource{Name: "eae.com",},
+					Resource: DomainResource{Name: fakeDomain,},
 				},
 			},
 			wantDeletedZone: Zone{
