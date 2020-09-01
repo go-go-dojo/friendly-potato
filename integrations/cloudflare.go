@@ -41,11 +41,7 @@ func ListZones() (zones Zones, err error) {
 	if err != nil {
 		return
 	}
-	for _, z := range cfz {
-		zz := Zone{}
-		zz.translateFromCloudflare(z)
-		zones.appendZone(zz)
-	}
+	zones.translateFromCloudflare(cfz)
 	return
 }
 
