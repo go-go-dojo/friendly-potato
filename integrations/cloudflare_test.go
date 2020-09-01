@@ -9,6 +9,12 @@ import (
 	"testing"
 )
 
+const(
+	realDomain1="1-qr.me"
+	realDomain2="gitpages.dev"
+	fakeDomain="abcxpto2020ultra.com"
+	)
+
 func TestInitAPI(t *testing.T) {
 	t.Logf("lookup CF_TOKEN env")
 	cfToken, ok := os.LookupEnv("CF_TOKEN")
@@ -59,38 +65,50 @@ func TestCreateZone(t *testing.T) {
 		wantErr         bool
 	}{
 		{
-			name: "create zone blablabla.com",
+			name: "create zone "+realDomain1,
 			args: args{
 				zone: Zone{
-					Name: "blablabla.com",
+					Resource: DomainResource{Name: realDomain1,},
 				},
 			},
 			wantCreatedZone: Zone{
-				Name: "blablabla.com",
+				Resource: DomainResource{Name: realDomain1,},
 			},
 			wantErr: false,
 		},
 		{
-			name: "create zone xptozone.com",
+			name: "create zone "+realDomain2,
 			args: args{
 				zone: Zone{
-					Name: "xptozone.com",
+					Resource: DomainResource{Name: realDomain2,},
 				},
 			},
 			wantCreatedZone: Zone{
-				Name: "xptozone.com",
+				Resource: DomainResource{Name: realDomain2,},
 			},
 			wantErr: false,
 		},
 		{
-			name: "create duplicate zone xptozone.com",
+			name: "create duplicate zone " + realDomain2,
 			args: args{
 				zone: Zone{
-					Name: "xptozone.com",
+					Resource: DomainResource{Name: realDomain2,},
 				},
 			},
 			wantCreatedZone: Zone{
-				Name: "",
+				Resource: DomainResource{Name: ""},
+			},
+			wantErr: true,
+		},
+		{
+			name: "create fake domain zone " + fakeDomain,
+			args: args{
+				zone: Zone{
+					Resource: DomainResource{Name: fakeDomain,},
+				},
+			},
+			wantCreatedZone: Zone{
+				Resource: DomainResource{Name: ""},
 			},
 			wantErr: true,
 		},
@@ -102,8 +120,8 @@ func TestCreateZone(t *testing.T) {
 				t.Errorf("CreateZone() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(gotCreatedZone.Name, tt.wantCreatedZone.Name) {
-				t.Errorf("CreateZone() gotCreatedZone = %v, want %v", gotCreatedZone.Name, tt.wantCreatedZone.Name)
+			if !reflect.DeepEqual(gotCreatedZone.Resource.Name, tt.wantCreatedZone.Resource.Name) {
+				t.Errorf("CreateZone() gotCreatedZone = %v, want %v", gotCreatedZone.Resource, tt.wantCreatedZone.Resource.Name)
 			}
 		})
 	}
@@ -126,16 +144,16 @@ func TestListZones(t *testing.T) {
 		wantErr   bool
 	}{
 		{
-			name:      "list zone find zone xptozone.com, blablabla.com",
+			name: "list zone find zone "+ realDomain1 +","+ realDomain2,
 			wantZones: Zones{
 				Zone{
-					Name: "xptozone.com",
+					Resource: DomainResource{Name: realDomain1},
 				},
 				{
-					Name: "blablabla.com",
+					Resource: DomainResource{Name: realDomain2},
 				},
 			},
-			wantErr:   false,
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
@@ -147,6 +165,79 @@ func TestListZones(t *testing.T) {
 			}
 			if !reflect.DeepEqual(gotZones.Names(), tt.wantZones.Names()) {
 				t.Errorf("ListZones() gotZones = %v, want %v", gotZones.Names(), tt.wantZones.Names())
+			}
+		})
+	}
+}
+
+func TestDeleteZone(t *testing.T) {
+	t.Logf("lookup CF_TOKEN env")
+	cfToken, ok := os.LookupEnv("CF_TOKEN")
+	if !ok {
+		t.Skipf("could not find cloudflare token as env SKIPPING...")
+	} else {
+		err := InitCloudFlareAPI(cfToken)
+		if err != nil {
+			t.Logf("failed to initialize cloudflare api: %v", err)
+		}
+	}
+	type args struct {
+		zone Zone
+	}
+	tests := []struct {
+		name            string
+		args            args
+		wantDeletedZone Zone
+		wantErr         bool
+	}{
+		{
+			name: "delete zone " + realDomain2,
+			args: args{
+				zone: Zone{
+					Resource: DomainResource{
+						Name: realDomain2,
+					},
+				},
+			},
+			wantDeletedZone: Zone{
+				Resource: DomainResource{Name: realDomain2,},
+			},
+			wantErr: false,
+		},
+		{
+			name: "delete zone "+realDomain1,
+			args: args{
+				zone: Zone{
+					Resource: DomainResource{Name: realDomain1,},
+				},
+			},
+			wantDeletedZone: Zone{
+				Resource: DomainResource{Name: realDomain1,},
+			},
+			wantErr: false,
+		},
+		{
+			name: "delete nonexistent zone" + fakeDomain,
+			args: args{
+				zone: Zone{
+					Resource: DomainResource{Name: fakeDomain,},
+				},
+			},
+			wantDeletedZone: Zone{
+				Resource: DomainResource{Name: "",},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotDeletedZone, err := DeleteZone(tt.args.zone)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DeleteZone() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotDeletedZone.Resource.Name, tt.wantDeletedZone.Resource.Name) {
+				t.Errorf("DeleteZone() gotDeletedZone = %v, want %v", gotDeletedZone.Resource.Name, tt.wantDeletedZone.Resource.Name)
 			}
 		})
 	}

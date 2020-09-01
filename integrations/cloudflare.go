@@ -3,6 +3,7 @@ package integrations
 import (
 	"fmt"
 	cf "github.com/cloudflare/cloudflare-go"
+	"time"
 )
 
 const healthCheckFailed = "health check for cloudflare failed"
@@ -16,19 +17,18 @@ func InitCloudFlareAPI(apiToken string) (err error) {
 	if err != nil {
 		return
 	}
-	if !healthCheck(){
-		err = fmt.Errorf(healthCheckFailed)
-		return
+	if b,err:=healthCheck();!b{
+		return fmt.Errorf("gotErr: %v", err)
 	}
 	return
 }
 
-func healthCheck() bool {
-	_, err := api.UserDetails()
+func healthCheck() (bool,error) {
+	_, err := api.ListZones()
 	if err != nil {
-		return false
+		return false,err
 	}
-	return true
+	return true,nil
 }
 
 // TODO: later expand health check to:
@@ -41,20 +41,37 @@ func ListZones() (zones Zones, err error) {
 	if err != nil {
 		return
 	}
-	for _, z := range cfz {
-		zz := Zone{}
-		zz.translateFromCloudflare(z)
-		zones.appendZone(zz)
-	}
+	zones.translateFromCloudflare(cfz)
 	return
 }
 
+// CreateZone -- creates a zone
 func CreateZone(zone Zone) (createdZone Zone, err error) {
-	z, err := api.CreateZone(zone.Name, true, cf.Account{ID: api.AccountID}, "full")
+	z, err := api.CreateZone(zone.Resource.Name, true, cf.Account{ID: api.AccountID}, "full")
 	if err != nil {
 		return
 	}
 	createdZone = Zone{}
 	createdZone.translateFromCloudflare(z)
+	return
+}
+
+// DeleteZone -- deletes a zone
+func DeleteZone(zone Zone)(deletedZone Zone,err error){
+	cfz:=zone.translateToCloudflare()
+	if cfz.ID == ""{
+		cfz.ID,err=api.ZoneIDByName(zone.Resource.Name)
+		if err != nil{
+			return
+		}
+	}
+	dz, err := api.DeleteZone(cfz.ID)
+	if err!=nil{
+		return
+	}
+	cfz.ID=dz.ID
+	cfz.Status="deleted"
+	cfz.ModifiedOn=time.Now()
+	deletedZone.translateFromCloudflare(cfz)
 	return
 }
