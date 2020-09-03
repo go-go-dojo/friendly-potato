@@ -1,6 +1,6 @@
 # Coding Dojo - Go 1st Edition
 
-![Continuos Integration](https://github.com/go-go-dojo/friendly-potato/workflows/Continuos%20Integration/badge.svg)
+![Continuos Integration](https://github.com/go-go-dojo/friendly-potato/workflows/Continuos%20Integration/badge.svg) [![codecov](https://codecov.io/gh/go-go-dojo/friendly-potato/branch/master/graph/badge.svg)](https://codecov.io/gh/go-go-dojo/friendly-potato)
 
 ## Challenge
 
