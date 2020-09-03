@@ -1,6 +1,6 @@
 # Coding Dojo - Go 1st Edition
 
-![Continuos Integration](https://github.com/go-go-dojo/friendly-potato/workflows/Continuos%20Integration/badge.svg) [![codecov](https://codecov.io/gh/go-go-dojo/friendly-potato/branch/master/graph/badge.svg)](https://codecov.io/gh/go-go-dojo/friendly-potato)
+![Continuos Integration](https://github.com/go-go-dojo/friendly-potato/workflows/Continuos%20Integration/badge.svg) [![Maintainability](https://api.codeclimate.com/v1/badges/c665c32f212c5a18e280/maintainability)](https://codeclimate.com/github/go-go-dojo/friendly-potato/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/c665c32f212c5a18e280/test_coverage)](https://codeclimate.com/github/go-go-dojo/friendly-potato/test_coverage)
 
 ## Challenge
 
