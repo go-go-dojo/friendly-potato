@@ -9,5 +9,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: unit test
-        #TODO: CI must use actions instead of Makefile
-        run: make install
+        
+        run: |
+          make install
+          bash <(curl -s https://codecov.io/bash)
