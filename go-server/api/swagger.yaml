@@ -228,6 +228,44 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
+   post:
+      tags:
+      - "pet"
+      summary: "Just a test to check Swagger hub sync pull"
+      operationId: "updatePetWithForm"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "petId"
+        in: "path"
+        description: "ID of pet that needs to be updated"
+        required: true
+        type: "integer"
+        format: "int64"
+        x-exportParamName: "PetId"
+      - name: "name"
+        in: "formData"
+        description: "Updated name of the pet"
+        required: false
+        type: "string"
+        x-exportParamName: "Name"
+        x-optionalDataType: "String"
+      - name: "status"
+        in: "formData"
+        description: "Updated status of the pet"
+        required: false
+        type: "string"
+        x-exportParamName: "Status"
+        x-optionalDataType: "String"
+      responses:
+        "405":
+          description: "Invalid input"
+      security:
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"        
     delete:
       tags:
       - "pet"
