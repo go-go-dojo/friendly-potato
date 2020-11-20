@@ -14,7 +14,11 @@ jobs:
   build:
     name: Build system
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'ref/heads/master' }}
+    if: 
+      contains('
+      ref/heads/master
+      ref/heads/marcpires-patch-1
+      ',github.ref)
     steps:
       - name: Run GHo build
         run: |
