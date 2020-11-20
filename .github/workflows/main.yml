@@ -15,5 +15,7 @@ jobs:
     name: Build system
     runs-on: ubuntu-latest
     if: ${{ github.ref = 'ref/heads/master' }}
-    run: |
-      echo "Build"
+    steps:
+      - name: Run GHo build
+        run: |
+          echo "Build"
