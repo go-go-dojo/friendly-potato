@@ -11,3 +11,14 @@ jobs:
       - name: unit test
         #TODO: CI must use actions instead of Makefile
         run: make install
+  build:
+    name: Build system
+    runs-on: ubuntu-latest
+    if: 
+      contains('
+      ref/heads/master
+      ',github.ref)
+    steps:
+      - name: Run GHo build
+        run: |
+          echo "Build"
