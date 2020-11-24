@@ -28,7 +28,7 @@ jobs:
     needs: [build]
     name: "Certificate"
     runs-on: ubuntu-latest
-    if: github.ref == 'ref/tags/release/**' || github.ref == 'ref/heads/master/'
+    if: github.ref == 'ref/tags/release/**' && github.ref == 'ref/heads/master/'
     steps:
      - name: Build flat image
        run: |
