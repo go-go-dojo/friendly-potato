@@ -1,10 +1,10 @@
 name: Continuos Integration
 on:
  release:
-   types: [ created ]  
+   types: [ created, prereleased ]  
  push:
    tags:
-    - 'release/**'
+    - '*'
    branches: [ master ]
  pull_request:
    branches: [ master ]
