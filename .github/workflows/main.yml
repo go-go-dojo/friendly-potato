@@ -1,7 +1,8 @@
 name: Continuos Integration
 on:  
  push:
-   tags: [ 'release/**' ]
+   tags:
+    - 'release/**'
    branches: [ master ]
  pull_request:
    branches: [ master ]
