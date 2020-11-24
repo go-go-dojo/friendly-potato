@@ -21,7 +21,6 @@ jobs:
   build:
     name: Build system
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/tags/release/**' }}
     steps:
       - name: Run Go build
         run: |
