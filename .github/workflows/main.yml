@@ -2,10 +2,11 @@ name: Continuos Integration
 on:
  push:
    branches: [ master ]
-   tags:
-    - '*'
  pull_request:
    branches: [ master ]
+ release:
+   types:
+     - created
 jobs:
   test:
     name: Install dependencies
