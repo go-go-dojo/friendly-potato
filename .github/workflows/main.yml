@@ -28,7 +28,7 @@ jobs:
     needs: build
     name: "Certificate"
     runs-on: ubuntu-latest
-    if: contains(github.ref,'refs/tags/release')
+    if: contains(github.ref,'refs/tags/release') || ${{ github.ref == 'refs/heads/master' }}
     steps:
      - name: Build flat image
        run: |
@@ -37,7 +37,7 @@ jobs:
     needs: certificate
     name: "Docker"
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'refs/tags/release')
+    if: contains(github.ref, 'refs/tags/release') || ${{ github.ref == 'refs/heads/master' }}
     steps:
      - name: Build flat image
        run: |
