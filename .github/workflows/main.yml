@@ -25,16 +25,16 @@ jobs:
         run: |
           echo "Build"
   certificate:
-    needs: [build]
+    needs: build
     name: "Certificate"
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/tags/release/**' || github.ref == 'refs/heads/master/' }}
+    if: github.ref == 'refs/tags/release/**' || github.ref == 'refs/heads/master/'
     steps:
      - name: Build flat image
        run: |
         echo "Certificate"
   docker:
-    needs: [certificate]
+    needs: certificate
     name: "Docker"
     runs-on: ubuntu-latest
     if: github.ref == 'refs/tags/release/**' || github.ref == 'refs/heads/master/'
@@ -43,7 +43,7 @@ jobs:
        run: |
         echo "Docker"
   release:
-     needs: [docker]
+     needs: docker
      name: "Flat image"
      runs-on: ubuntu-latest
      if: github.ref == 'refs/tags/release/**'
