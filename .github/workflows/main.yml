@@ -1,7 +1,5 @@
 name: Continuos Integration
 on:
- release:
-   types: [ created, prereleased ]  
  push:
    tags:
     - '*'
