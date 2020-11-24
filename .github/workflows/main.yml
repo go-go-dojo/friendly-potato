@@ -27,7 +27,7 @@ jobs:
     needs: build
     name: "Certificate"
     runs-on: ubuntu-latest
-    if: ${{ github.ref == "refs/tags/release/*" }}
+    if: ${{ github.ref == secrets.TAG_NAME }}
     steps:
      - name: Build flat image
        run: |
@@ -36,7 +36,7 @@ jobs:
     needs: certificate
     name: "Docker"
     runs-on: ubuntu-latest
-    if: ${{ github.ref == "refs/tags/release/* }}
+    if: ${{ github.ref == secrets.TAG_NAME }}
     steps:
      - name: Build flat image
        run: |
@@ -45,7 +45,7 @@ jobs:
      needs: docker
      name: "Flat image"
      runs-on: ubuntu-latest
-     if: ${{ github.ref == "refs/tags/release/*" }}
+     if: ${{ github.ref == secrets.TAG_NAME }}
      steps:
       - name: Build flat image
         run: |
