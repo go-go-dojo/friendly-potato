@@ -15,7 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: unit test
-        #TODO: CI must use actions instead of Makefile
         run: make install
   build:
     name: Build system
