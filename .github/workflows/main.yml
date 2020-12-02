@@ -12,18 +12,38 @@ jobs:
     name: Install dependencies
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Setup Go 1.15.1
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15.1
+      - name: Checkout module
         uses: actions/checkout@v2
       - name: unit test
         #TODO: CI must use actions instead of Makefile
         run: make install
   build:
+    needs: test
     name: Build system
     runs-on: ubuntu-latest
     steps:
       - name: Run Go build
         run: |
           echo "Build"
+  go-report:
+    needs: build
+    name: go report
+    runs-on: ubuntu-latest
+    steps:
+      - name: export
+        run: |
+          echo ${GOPATH}
+          "GOPATH" >> $GITHUB_ENV
+          "PATH=${PATH}:$$(go env GOPATH)/bin/" >> $GITHUB_ENV
+      - name: go report
+        run: |
+          echo "go report"
+          echo $GOPATH
+          echo $PATH
   certificate:
     needs: build
     name: "Certificate"
