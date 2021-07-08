@@ -1,56 +1,39 @@
 package integrations
 
 import (
-	"time"
-
+	"fmt"
 	cf "github.com/cloudflare/cloudflare-go"
+	"time"
 )
+
+const healthCheckFailed = "health check for cloudflare failed"
 
 var api *cf.API
 
-type Record struct {
-	Id        string
-	Zone      string
-	Ttl       uint
-	DnsType   string
-	DnsData   string
-	Timestamp time.Time
-}
-
-type Zone struct {
-	Id      string
-	Name    string
-	Records []Record
-}
-
-func (z *Zone) AppendRecords(r ...Record) {
-	if z.Records == nil {
-		z.Records = []Record{}
+//InitApi
+//initialize api token
+func InitCloudFlareAPI(apiToken string) (err error) {
+	api, err = cf.NewWithAPIToken(apiToken)
+	if err != nil {
+		return
 	}
-	for _, rr := range r {
-		z.Records = append(z.Records, rr)
+	if b,err:=healthCheck();!b{
+		return fmt.Errorf("gotErr: %v", err)
 	}
 	return
 }
 
-type Zones []Zone
-
-// InitAPI -- Configure token to cloudflare
-func InitAPI(apiToken string) (err error) {
-	api, err = cf.NewWithAPIToken(apiToken)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func HealthCheck() bool {
+func healthCheck() (bool,error) {
 	_, err := api.ListZones()
 	if err != nil {
-		return false
+		return false,err
 	}
-	return true
+	return true,nil
 }
+
+// TODO: later expand health check to:
+// - check connection
+// - see if user has permissions.
 
 // ListZones -- get all zones
 func ListZones() (zones Zones, err error) {
@@ -58,27 +41,37 @@ func ListZones() (zones Zones, err error) {
 	if err != nil {
 		return
 	}
-
-	for _, z := range cfz {
-		zz := Zone{
-			Id:      z.ID,
-			Name:    z.Name,
-			Records: []Record{},
-		}
-		zones = append(zones, zz)
-	}
+	zones.translateFromCloudflare(cfz)
 	return
 }
 
+// CreateZone -- creates a zone
 func CreateZone(zone Zone) (createdZone Zone, err error) {
-	z, err := api.CreateZone(zone.Name, true, cf.Account{ID: api.AccountID}, "full")
+	z, err := api.CreateZone(zone.Resource.Name, true, cf.Account{ID: api.AccountID}, "full")
 	if err != nil {
 		return
 	}
-	createdZone = Zone{
-		Id:      z.ID,
-		Name:    z.Name,
-		Records: []Record{},
+	createdZone = Zone{}
+	createdZone.translateFromCloudflare(z)
+	return
+}
+
+// DeleteZone -- deletes a zone
+func DeleteZone(zone Zone)(deletedZone Zone,err error){
+	cfz:=zone.translateToCloudflare()
+	if cfz.ID == ""{
+		cfz.ID,err=api.ZoneIDByName(zone.Resource.Name)
+		if err != nil{
+			return
+		}
 	}
+	dz, err := api.DeleteZone(cfz.ID)
+	if err!=nil{
+		return
+	}
+	cfz.ID=dz.ID
+	cfz.Status="deleted"
+	cfz.ModifiedOn=time.Now()
+	deletedZone.translateFromCloudflare(cfz)
 	return
 }
